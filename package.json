@@ -1,0 +1,33 @@
+{
+  "name": "rss",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack",
+    "build": "node tools/build",
+    "test": "eslint assets/script -f checkstyle -o checkstyle-result.xml",
+    "lint": "eslint assets/script || exit 0",
+    "lintfix": "eslint --fix assets/script || exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "bluebird": "^3.5.1",
+    "chalk": "^2.3.0",
+    "config": "^1.28.1",
+    "dateformat": "^3.0.2",
+    "eslint": "^4.11.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-private-props": "^0.3.0",
+    "eslint-plugin-promise": "^3.4.0",
+    "fs-extra": "^4.0.2",
+    "lodash.isequal": "^4.5.0",
+    "lodash.merge": "^4.6.0",
+    "minimist": "^1.2.0",
+    "node-libcurl": "^1.2.0",
+    "pngquant-bin": "^3.1.1",
+    "walk-promise": "^0.2.0",
+    "zip-dir": "^1.0.2"
+  }
+}

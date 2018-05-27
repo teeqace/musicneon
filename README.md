@@ -1,3 +1,1 @@
-# teakwatch
-# musicneon
 # musicneon

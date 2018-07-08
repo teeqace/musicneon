@@ -1,5 +1,6 @@
 import MessagePipeline from '../utils/MessagePipeline';
 import SongManager from '../managers/SongManager';
+import SoundManager from '../managers/SoundManager';
 const SONG_START_BUFFER = 2.0;
 
 cc.Class({
@@ -7,6 +8,8 @@ cc.Class({
 
   properties: {
     notePrefab: cc.Prefab,
+    longNotePrefab: cc.Prefab,
+    longNoteChildPrefab: cc.Prefab,
     loopLabel: cc.Label,
     tempoLabel: cc.Label,
     beatLabel: cc.Label,
@@ -17,6 +20,8 @@ cc.Class({
 
   onLoad () {
     this._notePool = new cc.NodePool();
+    this._longNotePool = new cc.NodePool();
+    this._longNoteChildPool = new cc.NodePool();
     MessagePipeline.on('game:reset', this._gameReset, this);
   },
 
@@ -55,6 +60,9 @@ cc.Class({
     
     this._songStart = true;
     this._songBufferEnd = false;
+
+    this._longNoteEnds = {};
+    this._longNotes = [];
   },
 
   update (dt) {
@@ -77,6 +85,7 @@ cc.Class({
         if (this._minBeat > this._minBeatPerBeat) {
           this._minBeat = 1;
           this._beat += 1;
+          // SoundManager.playSfx('tick');
           if (this._beat > this._beatPerBar) {
             this._beat = 1;
             this._bar += 1;
@@ -117,11 +126,22 @@ cc.Class({
           isLoop = true;
           break;
         }
-
       } else {
         this._noteIndex = i;
         break;
       }
+    }
+    if (this._longNoteEnds[this._beatName]) {
+      let longNotes = this._longNoteEnds[this._beatName];
+      if (longNotes.length > 0) {
+        for (let li = 0; li < longNotes.length; li++) {
+          longNotes[li].noteEnd();
+        }
+        delete this._longNoteEnds[this._beatName];
+      }
+    }
+    for (let i = 0; i < this._longNotes.length; i++) {
+      this._longNotes[i].noteAdd(this._beatName);
     }
     return isLoop;
   },
@@ -140,21 +160,68 @@ cc.Class({
   },
 
   _createNote(noteData) {
+    let notePrefab = this._getNote(noteData.type);
+    let note = notePrefab.getComponent(noteData.type);
+    if (!note) {
+      return;
+    }
+    note.init(noteData);
+    if (noteData.type === 'LongNote') {
+      if (!this._longNoteEnds[noteData.noteEnd]) {
+        this._longNoteEnds[noteData.noteEnd] = [];
+      }
+      this._longNoteEnds[noteData.noteEnd].push(note);
+      this._longNotes.push(note);
+    }
+  },
+
+  _createLongNoteChild(event) {
+    let noteData = event.detail;
     let notePrefab;
-    if (this._notePool.size() > 0) {
-      notePrefab = this._notePool.get();
+    if (this._longNoteChildPool.size() > 0) {
+      notePrefab = this._longNoteChildPool.get();
     } else {
-      notePrefab = cc.instantiate(this.notePrefab);
+      notePrefab = cc.instantiate(this.longNoteChildPrefab);
       notePrefab.on('noteDelete', this._noteDelete, this);
     }
     notePrefab.parent = this.node;
-    let note = notePrefab.getComponent('Note');
+    let note = notePrefab.getComponent('LongNoteChild');
     note.init(noteData);
+    noteData.longNote.addChild(note);
+  },
+
+  _getNote(type) {
+    let notePrefab;
+    let pool;
+    let prefab;
+    if (type === 'Note') {
+      pool = this._notePool;
+      prefab = this.notePrefab;
+    } else if (type === 'LongNote') {
+      pool = this._longNotePool;
+      prefab = this.longNotePrefab;
+    }
+    cc.log(this._notePool.size());
+    // if (pool.size() > 0) {
+    //   notePrefab = pool.get();
+    // } else {
+      notePrefab = cc.instantiate(prefab);
+      notePrefab.on('noteDelete', this._noteDelete, this);
+      if (type === 'LongNote') {
+        notePrefab.on('createLongNoteChild', this._createLongNoteChild, this);
+      }
+    // }
+    notePrefab.parent = this.node;
+    return notePrefab;
   },
 
   _noteDelete(event) {
     let noteNode = event.detail;
-    this._notePool.put(noteNode);
+    if (noteNode.name === 'Note') {
+      this._notePool.put(noteNode);
+    } else if (noteNode.name === 'LongNote') {
+      this._longNotePool.put(noteNode);
+    }
   },
 
   _setMinBeatTime() {

@@ -1,14 +1,14 @@
 {
   "appKey": "",
   "appSecret": "",
+  "encryptJs": true,
   "excludeScenes": [],
+  "fb-instant-games": {},
   "includeAnySDK": false,
   "includeSDKBox": false,
-  "includeSdk": [
-    "anysdk"
-  ],
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
+  "jailbreakPlatform": false,
   "md5Cache": false,
   "mergeStartScene": false,
   "oauthLoginServer": "",
@@ -21,8 +21,17 @@
   },
   "packageName": "org.cocos2d.dotgame",
   "privateKey": "",
+  "qqplay": {
+    "orientation": "portrait"
+  },
   "renderMode": "0",
   "startScene": "cca3f015-8226-4829-a44b-685fc246a5b3",
-  "title": "teakwatch",
-  "webOrientation": "portrait"
+  "title": "MusicNeon",
+  "webOrientation": "landscape",
+  "wechatgame": {
+    "appid": "wx6ac3f5090a6b99c5",
+    "orientation": "portrait"
+  },
+  "xxteaKey": "e012ead4-a65f-4b",
+  "zipCompressJs": true
 }

@@ -558,7 +558,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 0,
-      "height": 0
+      "height": 200
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -586,6 +586,12 @@
     "_enabled": true,
     "notePrefab": {
       "__uuid__": "24cdddc5-8a37-47dd-b426-7565e0fb711d"
+    },
+    "longNotePrefab": {
+      "__uuid__": "aca1981a-60ae-4941-8162-a0c32e10d66a"
+    },
+    "longNoteChildPrefab": {
+      "__uuid__": "75e53d06-93c6-4357-87e7-73485557a318"
     },
     "loopLabel": {
       "__id__": 15
